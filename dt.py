@@ -2,25 +2,37 @@ import streamlit as st
 import numpy as np
 import joblib
 
-st.title("🍎 Apple Quality Prediction BY Decision Tree Model")
+def app():
+    st.markdown("## 🌳 Decision Tree Model")
+    st.info("Enter the apple characteristics below to predict if it's a **Good** or **Bad** Apple.")
 
-st.write("Enter the apple characteristics below to predict Good or Bad Apple.")
+    # Load model and scaler using JOBLIB
+    model = joblib.load("dt_model.pkl")
 
-# Load model and scaler using JOBLIB
-model = joblib.load("dt_model.pkl")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        size = st.number_input("📏 Size", help="Size of the apple")
+        weight = st.number_input("⚖️ Weight", help="Weight of the apple")
+        sweetness = st.number_input("🍬 Sweetness", help="Sweetness level")
+        crunchiness = st.number_input("🥨 Crunchiness", help="Crunchiness level")
+    
+    with col2:
+        juiciness = st.number_input("🧃 Juiciness", help="Juiciness level")
+        ripeness = st.number_input("🕰️ Ripeness", help="Ripeness level")
+        acidity = st.number_input("🍋 Acidity", help="Acidity level")
 
-size = st.number_input("Size")
-weight = st.number_input("Weight")
-sweetness = st.number_input("Sweetness")
-crunchiness = st.number_input("Crunchiness")
-juiciness = st.number_input("Juiciness")
-ripeness = st.number_input("Ripeness")
-acidity = st.number_input("Acidity")
+    st.write("")
+    if st.button("🔍 Predict Quality", key="predict_dt"):
+        X = np.array([[size, weight, sweetness, crunchiness, juiciness, ripeness, acidity]])
 
-if st.button("Predict"):
-    X = np.array([[size, weight, sweetness, crunchiness, juiciness, ripeness, acidity]])
+        pred = model.predict(X)[0]
 
-    pred = model.predict(X)[0]
+        if pred == 1:
+            st.success("### Result: **Good Apple 🍏**")
+            st.balloons()
+        else:
+            st.error("### Result: **Bad Apple 🍎**")
 
-    result = "Good 🍏" if pred == 1 else "Bad 🍎"
-    st.success(f"Prediction: **{result}**")
+if __name__ == "__main__":
+    app()
